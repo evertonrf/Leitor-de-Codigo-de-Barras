@@ -1,6 +1,6 @@
-import { barCodeDetails } from "./modules/barCode/barCode";
+import { readBarCodes } from "./modules/barCode/barCode";
 import { getAll } from "./repository/barCodeRepository";
 
-const barCodes = getAll()
+const barCodes = readBarCodes(getAll())
 
-barCodeDetails(barCodes)
+console.log(JSON.stringify(barCodes, null, 2))

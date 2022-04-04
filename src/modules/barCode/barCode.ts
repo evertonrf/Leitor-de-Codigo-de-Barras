@@ -7,9 +7,16 @@ interface Detail {
   description: string
 }
 
-interface Region extends Detail { }
+interface Region extends Detail {
+  regionCode: number
+}
 
-interface Product extends Detail { }
+interface Product {
+  description: string
+  type: number
+}
+
+interface InvalidDetails extends Detail { }
 
 type BarCode = {
   origin: Region | null
@@ -18,9 +25,11 @@ type BarCode = {
   sellerCode: Number
   product: Product | null
   original: string
+  isInvalid: boolean
+  invalidDetails: InvalidDetails[]
 }
 
-export function barCodeDetails(barCodes: string[]): BarCode[] {
+export function readBarCodes(barCodes: string[]): BarCode[] {
 
   const barCodesReturn: BarCode[] = []
 
@@ -33,6 +42,48 @@ export function barCodeDetails(barCodes: string[]): BarCode[] {
     const loggiCode = parseInt(split[2])
     const sellerCode = parseInt(split[3])
     const product = getProdutcByCode(parseInt(split[4]))
+    let isInvalid = false
+    const invalidDetails: InvalidDetails[] = []
+
+    if (!origin) {
+      isInvalid = true
+      invalidDetails.push({
+        code: 1,
+        description: 'Origem Invalida'
+      })
+    }
+
+    if (!destiny) {
+      isInvalid = true
+      invalidDetails.push({
+        code: 2,
+        description: 'Destino Invalida'
+      })
+    }
+
+    if (!product) {
+      isInvalid = true
+      invalidDetails.push({
+        code: 3,
+        description: 'Produto Invalido'
+      })
+    }
+
+    if (sellerCode == 367) {
+      isInvalid = true
+      invalidDetails.push({
+        code: 4,
+        description: 'Vendedor Inativo'
+      })
+    }
+
+    if (destiny?.regionCode == 3 && product?.type == 1) {
+      isInvalid = true
+      invalidDetails.push({
+        code: 5,
+        description: product.description + ' não podem ser despachadas para ' + destiny.description
+      })
+    }
 
     barCodesReturn.push({
       origin: origin,
@@ -40,7 +91,9 @@ export function barCodeDetails(barCodes: string[]): BarCode[] {
       loggiCode: loggiCode,
       sellerCode: sellerCode,
       product: product,
-      original: barCode
+      original: barCode,
+      isInvalid: isInvalid,
+      invalidDetails: invalidDetails
     })
 
   }
@@ -53,7 +106,9 @@ function getRegionByCode(code: number): Region | null {
     if (code >= region.range[0] && code <= region.range[1]) {
       return {
         code: code,
-        description: region.description
+        description: region.description,
+        regionCode: region.regionCode
+
       }
     }
   }
@@ -65,7 +120,7 @@ function getProdutcByCode(code: number): Product | null {
   for (const product of productMap) {
     if (code == product.type) {
       return {
-        code: code,
+        type: code,
         description: product.description
       }
     }

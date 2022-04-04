@@ -1,23 +1,28 @@
 export const regionMap = [
   {
     description: 'Sudeste',
-    range: [1, 99]
+    range: [1, 99],
+    regionCode: 1
   },
   {
     description: 'Sul',
-    range: [100, 199]
+    range: [100, 199],
+    regionCode: 2
   },
   {
     description: 'Centro-oeste',
-    range: [201, 299]
+    range: [201, 299],
+    regionCode: 3
   },
   {
     description: 'Nordeste',
-    range: [300, 399]
+    range: [300, 399],
+    regionCode: 4
   },
   {
     description: 'Norte',
-    range: [400, 499]
+    range: [400, 499],
+    regionCode: 5
   }
 ]
 
