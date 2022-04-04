@@ -1,43 +1,54 @@
 import { ALL } from "dns"
+import { Interface } from "readline"
 import { productMap, regionMap } from "./detailsMap"
 
-type Detail = {
+interface Detail {
   code: number,
   description: string
 }
 
-type Region = Detail
+interface Region extends Detail { }
 
-type Product = Detail
+interface Product extends Detail { }
 
 type BarCode = {
-  origin: Region
-  destiny: Region
+  origin: Region | null
+  destiny: Region | null
   loggiCode: Number
   sellerCode: Number
-  product: Product
+  product: Product | null
+  original: string
 }
 
 export function barCodeDetails(barCodes: string[]): BarCode[] {
 
-  const codes = barCodes.map(barCode => {
-    const split = barCode.match(/.{3}/g)
-    if (!split) return {}
+  const barCodesReturn: BarCode[] = []
 
-    const origin = getRegion(parseInt(split[0]))
-    const destiny = getRegion(parseInt(split[1]))
+  for (const barCode of barCodes) {
+    const split = barCode.match(/.{3}/g)
+    if (!split) continue
+
+    const origin = getRegionByCode(parseInt(split[0]))
+    const destiny = getRegionByCode(parseInt(split[1]))
     const loggiCode = parseInt(split[2])
     const sellerCode = parseInt(split[3])
-    const productMap = getProdutc(parseInt(split[4]))
+    const product = getProdutcByCode(parseInt(split[4]))
 
-    console.log(productMap)
+    barCodesReturn.push({
+      origin: origin,
+      destiny: destiny,
+      loggiCode: loggiCode,
+      sellerCode: sellerCode,
+      product: product,
+      original: barCode
+    })
 
-  })
+  }
 
-  return []
+  return barCodesReturn
 }
 
-function getRegion(code: number): Region | null {
+function getRegionByCode(code: number): Region | null {
   for (const region of regionMap) {
     if (code >= region.range[0] && code <= region.range[1]) {
       return {
@@ -49,7 +60,8 @@ function getRegion(code: number): Region | null {
 
   return null
 }
-function getProdutc(code: number): Product | null {
+
+function getProdutcByCode(code: number): Product | null {
   for (const product of productMap) {
     if (code == product.type) {
       return {
