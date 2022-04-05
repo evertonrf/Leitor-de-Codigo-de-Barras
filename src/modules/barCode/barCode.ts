@@ -7,7 +7,7 @@ interface Detail {
   description: string
 }
 
-interface Region extends Detail {
+export interface Region extends Detail {
   regionCode: number
 }
 
@@ -18,7 +18,7 @@ interface Product {
 
 interface InvalidDetails extends Detail { }
 
-type BarCode = {
+export type BarCode = {
   origin: Region | null
   destiny: Region | null
   loggiCode: Number
@@ -26,7 +26,9 @@ type BarCode = {
   product: Product | null
   original: string
   isInvalid: boolean
-  invalidDetails: InvalidDetails[]
+  invalidDetails: {
+    [key: string]: InvalidDetails
+  }
 }
 
 export function readBarCodes(barCodes: string[]): BarCode[] {
@@ -43,46 +45,48 @@ export function readBarCodes(barCodes: string[]): BarCode[] {
     const sellerCode = parseInt(split[3])
     const product = getProdutcByCode(parseInt(split[4]))
     let isInvalid = false
-    const invalidDetails: InvalidDetails[] = []
+    const invalidDetails: {
+      [key: string]: InvalidDetails
+    } = {}
 
     if (!origin) {
       isInvalid = true
-      invalidDetails.push({
+      invalidDetails['1'] = {
         code: 1,
         description: 'Origem Invalida'
-      })
+      }
     }
 
     if (!destiny) {
       isInvalid = true
-      invalidDetails.push({
+      invalidDetails['2'] = {
         code: 2,
         description: 'Destino Invalida'
-      })
+      }
     }
 
     if (!product) {
       isInvalid = true
-      invalidDetails.push({
+      invalidDetails['3'] = {
         code: 3,
         description: 'Produto Invalido'
-      })
+      }
     }
 
     if (sellerCode == 367) {
       isInvalid = true
-      invalidDetails.push({
+      invalidDetails['4'] = {
         code: 4,
         description: 'Vendedor Inativo'
-      })
+      }
     }
 
     if (destiny?.regionCode == 3 && product?.type == 1) {
       isInvalid = true
-      invalidDetails.push({
+      invalidDetails['5'] = {
         code: 5,
         description: product.description + ' não podem ser despachadas para ' + destiny.description
-      })
+      }
     }
 
     barCodesReturn.push({
