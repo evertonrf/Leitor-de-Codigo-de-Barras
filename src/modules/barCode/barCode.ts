@@ -21,8 +21,8 @@ interface InvalidDetails extends Detail { }
 export type BarCode = {
   origin: Region | null
   destiny: Region | null
-  loggiCode: Number
-  sellerCode: Number
+  loggiCode: number
+  sellerCode: number
   product: Product | null
   original: string
   isInvalid: boolean

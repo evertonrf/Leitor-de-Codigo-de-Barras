@@ -10,7 +10,8 @@ export function getTotalByRegion(totalByRegion: TotalByRegionType[], barCode: Ba
     totalByRegion.push({
       regionCode: barCode.destiny?.regionCode,
       totalProduct: 1,
-      barCodes: [barCode]
+      barCodes: [barCode],
+      region: barCode.destiny
     })
   } else {
     let totalExist = false
@@ -27,7 +28,8 @@ export function getTotalByRegion(totalByRegion: TotalByRegionType[], barCode: Ba
       totalByRegion.push({
         regionCode: barCode.destiny?.regionCode,
         totalProduct: 1,
-        barCodes: [barCode]
+        barCodes: [barCode],
+        region: barCode.destiny
       })
     }
   }
